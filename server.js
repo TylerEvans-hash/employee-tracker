@@ -18,11 +18,10 @@ const start = () => {
                 'View all departments',
                 'View all roles',
                 'View all employees',
-                'add a department',
+                'Add a department',
                 'Add a role',
                 'Add an employee',
-                'Update an employee role',
-                'Quit'
+                'Update an employee role'
             ]
         }
     ])
@@ -31,28 +30,35 @@ const start = () => {
                 case "View all departments":
                     viewDepartments();
                     break;
+
                 case "View all roles":
                     viewRoles();
                     break;
+
                 case "View all employees":
                     viewEmployees();
                     break;
+
                 case "Add a department":
                     addDepartment();
                     break;
+
                 case "Add a role":
                     addRole();
                     break;
-                case "Add an employee": 
-                    console.log("Add employee");
+
+                case "Add an employee":
+                    addEmployee();
                     break;
+
                 case "Update an empoyee role":
                     console.log("Update employee");
                     break;
+
                 case "Quit":
                     quit();
                     break;
-            }            
+            }
         })
 }
 
@@ -90,28 +96,118 @@ function viewEmployees() {
 };
 
 function addDepartment() {
-    inquirer.prompt([{
-        type: 'input',
-        name: 'departmentName',
-        message: 'What is the Department name?',
-        validate: (value) => {
-            if (value) { 
-                return true 
-            } else {
-                return "Department name is REQUIRED!!!";
+    console.log("ada fucing dept");
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'departmentName',
+            message: 'What is the department name?',
+            validate: (value) => {
+                if (!value) { return "Department name is required!" }
+                return true;
+            }   
+        }
+    ])
+        .then((data) => {
+            db.query(
+                'INSERT INTO departments SET ?',
+                { name: data.departmentName },
+                function (err, results) {
+                    if (err) throw err;
+                    console.table(results);
+                    viewDepartments();
+                }
+            )
+        })
+}
+
+const updatedRoles = [];
+const updatedManagers = [];
+
+function selectRole() {
+    db.query(
+        'SELECT * FROM roles',
+        function (err, results) {
+            if (err) throw err;
+            for (let i = 0; i < results.length; i++) {
+                updatedRoles.push(results[i].title);
             }
         }
-    }]).then((data) => {
-        db.query(
-            'INSERT INTO department SET ?',
-            { name: data.departmentName },
-            function (err, results) {
-                if (err) throw err;
-                console.table(results);
-                viewDepartments();
-            }
-        )
-    })
+    );
+    return updatedRoles;
 };
+
+function selectManager() {
+    db.query(
+        'SELECT * FROM managers',
+        function (err, results) {
+            if (err) throw err;
+            for (let i = 0; i < results.length; i++) {
+                updatedManagers.push(results[i].first_name + ' ' + results[i].last_name);
+            }
+        }
+    )
+    return updatedManagers;
+};
+
+function addEmployee() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'Please enter employees first name.',
+            validate: (value) => {
+                if (!value) {
+                    return "First name is required";
+                } else {
+                    return true;
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'Please enter employees last name.',
+            validate: (value) => {
+                if (!value) {
+                    return "Last name is required";
+                } else {
+                    return true;
+                }
+            }
+        },
+        {
+            type: 'list',
+            name: 'managerName',
+            message: 'Please choose their manager from the following list.',
+            choices: selectManager()
+        },
+        {
+            type: 'list',
+            name: 'employeeRole',
+            message: 'Please select employees role.',
+            choices: selectRole()
+        }
+    ])
+        .then((results) => {
+            var addEmployeeRole = selectRole().indexOf(results.employeeRole) + 1;
+            var addEmployeeManager = selectManager().indexOf(results.managerName) + 1;
+
+            db.query(
+                'INSERT INTO employees SET ?',
+                {
+                    first_name: results.firstName,
+                    last_name: results.lastName,
+                    role_id: addEmployeeRole,
+                    manager_id: addEmployeeManager
+                },
+                function (err, results) {
+                    if (err) throw err;
+                    console.table(results);
+                    viewEmployees();
+                }
+            )
+        })
+}
 
 start();
