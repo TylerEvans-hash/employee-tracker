@@ -12,6 +12,9 @@ In the command-line enter
 
     npm start
 
+### Application Screenshot
+![employee tracker screenshot](assets/employee-tracker.jpg)
+
 ### User Story
 AS A business owner
 

@@ -20,8 +20,7 @@ const start = () => {
                 // 'View Employees by department',
                 'Add a department',
                 'Add a role',
-                'Add an employee',
-                'Update an employee role'
+                'Add an employee'
             ]
         }
     ])
@@ -53,10 +52,6 @@ const start = () => {
 
                 case "Add an employee":
                     addEmployee();
-                    break;
-
-                case "Update an empoyee role":
-                    console.log("Update employee");
                     break;
             }
         })
