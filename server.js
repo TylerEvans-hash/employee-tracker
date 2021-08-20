@@ -96,7 +96,6 @@ function viewEmployees() {
 };
 
 function addDepartment() {
-    console.log("ada fucing dept");
     inquirer.prompt([
         {
             type: 'input',
@@ -208,6 +207,53 @@ function addEmployee() {
                 }
             )
         })
-}
+};
+
+function addRole() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'roleName',
+            message: 'Please enter new role title.',
+            validate: (value) => {
+                if (!value) return "Role title is required!!!";
+                return true;
+            }
+        },
+        {
+            type: 'input',
+            name: 'salaryAmount',
+            message: 'Please enter the salary for this position.',
+            validate: (value) => {
+                if (!value) return "There needs to be a salary amount!!!";
+                return true;
+            }
+        },
+        {
+            type: 'input',
+            name: 'departmentId',
+            message: 'Please enter the department id.',
+            validate: (value) => {
+                if (!value) return "Department id is required!!!";
+                return true;
+            }
+        }
+    ])
+        .then((roleData) => {
+            db.query(
+                'INSERT INTO roles SET ?',
+                {
+                    title: roleData.roleName,
+                    salary: roleData.salaryAmount,
+                    department_id: roleData.departmentId
+                },
+                function (err, results) {
+                    if (err) throw err;
+                    console.table(results);
+                    viewRoles();
+                }
+            )
+        });
+};
 
 start();
