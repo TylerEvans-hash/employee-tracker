@@ -2,7 +2,6 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const consoleTable = require('console.table');
 const db = require('./db/connection');
-const { allowedNodeEnvironmentFlags } = require('process');
 
 db.connect(error => {
     if (error) throw error;
@@ -18,6 +17,7 @@ const start = () => {
                 'View all departments',
                 'View all roles',
                 'View all employees',
+                // 'View Employees by department',
                 'Add a department',
                 'Add a role',
                 'Add an employee',
@@ -39,6 +39,10 @@ const start = () => {
                     viewEmployees();
                     break;
 
+                // case "View Employees by department":
+                //     employeesByDept();
+                //     break;
+
                 case "Add a department":
                     addDepartment();
                     break;
@@ -53,10 +57,6 @@ const start = () => {
 
                 case "Update an empoyee role":
                     console.log("Update employee");
-                    break;
-
-                case "Quit":
-                    quit();
                     break;
             }
         })
@@ -122,7 +122,9 @@ function addDepartment() {
 
 const updatedRoles = [];
 const updatedManagers = [];
+// const updatedDepartments = [];
 
+// selectRole and selectManager functions loop through queried data and pushed it to choices for other functions
 function selectRole() {
     db.query(
         'SELECT * FROM roles',
@@ -148,6 +150,32 @@ function selectManager() {
     )
     return updatedManagers;
 };
+
+
+// Loop is not working properly
+// function selectDepartment() {
+//     db.query(
+//         'SELECT * FROM departments',
+//         function (err, data) {
+//             if (err) throw err;
+//             for ( let i = 0; i < data.length; i++ ) {
+//                 updatedDepartments.push(data[i].name);
+//             }
+//         }
+//     );
+//     return updatedDepartments;
+// };
+
+// function employeesByDept() {
+//     inquirer.prompt([
+//         {
+//             type: 'list',
+//             name: 'departmentName',
+//             message: 'Please choose from the following list of departments.',
+//             choices: selectDepartment()
+//         }
+//     ]).then((data) => console.log(data))
+// }
 
 function addEmployee() {
     inquirer.prompt([
