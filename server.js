@@ -3,9 +3,9 @@ const mysql = require('mysql2');
 const consoleTable = require('console.table');
 const db = require('./db/connection');
 
-// db.connect(error => {
-//     if (error) throw error;
-// });
+db.connect(error => {
+    if (error) throw error;
+});
 
 const start = () => {
     inquirer.prompt([
